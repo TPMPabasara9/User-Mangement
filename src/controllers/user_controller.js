@@ -1,16 +1,51 @@
 const express = require('express');
-const router = express.Router();
-const User = require('../../models/user_model');
-const Role = require('../../models/role_model');
+const userService = require('../service/user_service');
+const User = require('../models/user_model');
+
+
 
 // Create a new user
-const createUser = async (req,res) =>{
-    try{
-        const {username, email , password , role } = req.body;
-        const newUser = new User({username, email, password, role});
-        await newUser.save();
+const createUser = async (req, res) => {
+    try {
+        const userData = req.body;
+        const newUser = await userService.createUser(userData);
         res.status(201).json(newUser);
     } catch (error) {
-        res.status(400).json({message: error.message});
+        res.status(400).json({
+            message: error.message
+        });
+    }
+
+}
+
+const getAllUsers = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const users = await userService.getAllUsers(page, limit);
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(400).json({
+            message: error.message
+        });
+    }
+};
+
+const getUserById = async (req, res) =>{
+    try{
+        const userId = req.params.id;
+        const user = await userService.getUserById(userId);
+        if(!user){
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(400).json({
+            message: error.message
+        });
     }
 }
+
+module.exports = { createUser, getAllUsers, getUserById };
