@@ -1,17 +1,18 @@
-console.log("APP.JS STARTED");
 
 const express = require("express");
-
+const rolesRoute = require("./routes/roll_routes");
+const userRoute = require("./routes/user_routes");
 console.log("Express loaded");
 
 const app = express();
 
-const port = 3000;
+app.use(express.json());
 
-app.get("/", (req, res) => {
-    res.send("Hello world! Express js is working");
-});
+app.use("/api/roles", rolesRoute);
+app.use("/api/users", userRoute);
 
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
+app.get("/",(req,res) =>{
+    res.send("Welcome to the Role Management API");
+})
+
+module.exports = app;
