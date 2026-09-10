@@ -30,7 +30,11 @@ const createUser = async (userData) =>{
         password: hashedPassword,
         roles: roleIds
     });
-    return await newUser.save();
+    const savedUser = await newUser.save();
+    const responseUser = savedUser.toObject();
+    delete responseUser.password;
+
+    return responseUser;
     
 }
 
@@ -106,4 +110,17 @@ const deleteUser = async (id) => {
     return await User.findByIdAndDelete(id).select('-password');
 }
 
-module.exports = { createUser, getAllUsers, getUserById, updateUser, deleteUser };
+const getUsersByRole = async (roleName) => {
+    if (!roleName) {
+        throw new Error('Role name is required');
+    }
+    const role = await roleService.getRoleByName(roleName);
+    if (!role) {
+        return [];
+    }
+
+    const users = await User.find({ roles: role._id }).select('-password');
+    return users;
+}
+
+module.exports = { createUser, getAllUsers, getUserById, updateUser, deleteUser, getUsersByRole };
