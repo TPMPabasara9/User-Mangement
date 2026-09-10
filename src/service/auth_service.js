@@ -16,9 +16,11 @@ const login = async (email, password) => {
         email: user.email,
         roles: user.roles.map(role => role.name)
     }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    
 
-    return { user, token };
+    const responseUser = user.toObject();
+    delete responseUser.password;
+
+    return { user: responseUser, token };
     
 }
 
