@@ -33,7 +33,7 @@ const getAllUsers = async (req, res) => {
 
 const getUserById = async (req, res) =>{
     try{
-        const userId = req.query.id;
+        const userId = req.params.id;
         const user = await userService.getUserById(userId);
         if(!user){
             return res.status(404).json({
@@ -88,8 +88,8 @@ const deleteUser = async (req, res) => {
         }
 
         res.status(200).json({
-            message: 'User deleted successfully',
-            data: deletedUser
+            message: `User ${deletedUser.id } deleted successfully`,
+           
         });
     } catch (error) {
         res.status(400).json({
@@ -98,4 +98,25 @@ const deleteUser = async (req, res) => {
     }
 }
 
-module.exports = { createUser, getAllUsers, getUserById, updateUser, deleteUser };
+const getUsersByRole = async (req,res) =>{
+    try{
+        const roleName = req.params.roleName;
+        if(!roleName){
+            return res.status(400).json({
+                message: 'Role name is required'
+            });
+
+        }
+        const users = await userService.getUsersByRole(roleName);
+        res.status(200).json({
+            message: 'Users fetched successfully',
+            data: users
+        });
+    } catch (error) {
+        res.status(400).json({
+            message: error.message
+        });
+    }
+}
+
+module.exports = { createUser, getAllUsers, getUserById, updateUser, deleteUser, getUsersByRole };
